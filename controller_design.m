@@ -4,16 +4,22 @@
 s = tf('s');
 [num,den] = ss2tf(A,B,C,D);
 Gs = tf(num, den);
-Gs = Gs * (s + 1.454e06);
 
-%% apply unity feedback and check the output
+% Convert this digital tf to discrete and eliminate the pole-zeroes
+T_samp = 0.001;
+d_Gs = c2d(Gs, T_samp, 'zoh');
+d_Gs = minreal(d_Gs, 0.001);
+
+Gs = d2c(d_Gs);
+
+% apply unity feedback and check the output
 sys = feedback(Gs, 1);
 os_per = 7.16       % Percentage overshoot obtained from step response
 z = sqrt(((log(os_per/100))^2) / (pi^2 + (log(os_per/100))^2));
 
-% zpk(sys)  % To see the poles of the system.
-% Dominant closed loop poles: (29.61 +- 35.28*i)
-
+% % zpk(sys)  % To see the poles of the system.
+% % Dominant closed loop poles: (29.61 +- 35.28*i)
+% 
 %% Find the angle made by the zeta line and the new point of rootlocus
 z_angle = pi - atan(35.28/29.61);
 
@@ -29,7 +35,8 @@ zero_angle = zero_angle * pi / 180;                 % angle in radians
 
 zero_real_part = real_part - (img_part / tan(pi - zero_angle));
 
-cont = (s + zero_real_part);
-sys = feedback(cont*Gs, 1);
-rlocus(sys);
-sgrid(z, 0);
+PD = (s + zero_real_part);
+PI = (s + 0.01)/s;
+sys = feedback(PD*Gs*PI, 1);
+step(sys);
+
