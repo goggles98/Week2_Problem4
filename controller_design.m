@@ -40,3 +40,4 @@ PI = (s + 0.01)/s;
 sys = feedback(PD*Gs*PI, 1);
 step(sys);
 
+% controller equation: s + 186.57 + 1.86/s
