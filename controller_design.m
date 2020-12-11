@@ -20,6 +20,7 @@ z = sqrt(((log(os_per/100))^2) / (pi^2 + (log(os_per/100))^2));
 % % zpk(sys)  % To see the poles of the system.
 % % Dominant closed loop poles: (29.61 +- 35.28*i)
 % 
+
 %% Find the angle made by the zeta line and the new point of rootlocus
 z_angle = pi - atan(35.28/29.61);
 
@@ -41,3 +42,6 @@ sys = feedback(PD*Gs*PI, 1);
 step(sys);
 
 % controller equation: s + 186.57 + 1.86/s
+% Kp = 186.57
+% Kd = 1
+% Ki = 1.86
